@@ -22,6 +22,7 @@ DHT dht(DHT11PIN, DHTTYPE);
 
 int buttonPin = 2;
 int buttonState = 0;
+bool bmpConnected = true;
 
 void setup() {
   Serial.begin(9600);
@@ -34,13 +35,12 @@ void setup() {
     Serial.println("Connecting to WiFi..");
   }
 
-//  if (!bmp.begin()) {
-//    Serial.println("Could not find a valid BMP085/BMP180 sensor, check wiring!");
-//    while (1) {}
-//  }
+  if (!bmp.begin()) {
+    Serial.println("Could not find a valid BMP085/BMP180 sensor, check wiring!");
+    bmpConnected = false;
+  }
 
   dht.begin();
-  
 }
 
 void loop() {
@@ -51,13 +51,13 @@ void loop() {
   }
 
   if (WiFi.status() == WL_CONNECTED) {
-    float temperature = bmp.readTemperature();
-    float pressure = bmp.readPressure();
-    float altitude = bmp.readAltitude();
-    float sealevelPressure = bmp.readSealevelPressure();
+    float temperature = bmpConnected ? bmp.readTemperature() : 0.0;
+    float pressure = bmpConnected ? bmp.readPressure() : 0.0;
+    float altitude = bmpConnected ? bmp.readAltitude() : 0.0;
+    float sealevelPressure = bmpConnected ? bmp.readSealevelPressure() : 0.0;
     float humidity = dht.readHumidity();
     float outsideTemp = dht.readTemperature();
-    int rainSensorValue = analogRead(rainSensorPin);
+    int rainSensorValue = 100 - analogRead(rainSensorPin);
     int ldrSensorValue = analogRead(ldrSensorPin);
 
     float rainPercent = map(rainSensorValue, 0, 4095, 0, 100);
@@ -65,18 +65,22 @@ void loop() {
 
     // Display data on Serial Monitor
     Serial.println("Data:");
-    Serial.print("Temperature: ");
-    Serial.print(temperature);
-    Serial.println(" *C");
-    Serial.print("Pressure: ");
-    Serial.print(pressure);
-    Serial.println(" Pa");
-    Serial.print("Altitude: ");
-    Serial.print(altitude);
-    Serial.println(" meters");
-    Serial.print("Pressure at sealevel (calculated): ");
-    Serial.print(sealevelPressure);
-    Serial.println(" Pa");
+    if (bmpConnected) {
+      Serial.print("Temperature: ");
+      Serial.print(temperature);
+      Serial.println(" *C");
+      Serial.print("Pressure: ");
+      Serial.print(pressure);
+      Serial.println(" Pa");
+      Serial.print("Altitude: ");
+      Serial.print(altitude);
+      Serial.println(" meters");
+      Serial.print("Pressure at sealevel (calculated): ");
+      Serial.print(sealevelPressure);
+      Serial.println(" Pa");
+    } else {
+      Serial.println("BMP sensor not connected.");
+    }
     Serial.print("Humidity: ");
     Serial.print(humidity);
     Serial.println("%");
