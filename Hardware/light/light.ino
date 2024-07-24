@@ -1,6 +1,6 @@
 #include <ESP32Servo.h>
 
-#define LIGHT_SENSOR_PIN 34
+#define LIGHT_SENSOR_PIN 33
 #define SERVO_PIN 13
 #define PIR_SENSOR_PIN 27
 #define RELAY_PIN 26
@@ -26,13 +26,12 @@ void loop() {
   Serial.print(" | PIR Value = ");
   Serial.print(pirValue);
 
-  if (analogValue < 2045) {
-    Serial.println(" => Dark");
-    digitalWrite(RELAY_PIN, LOW); // Turn relay off
-    myServo.write(0); // Move servo to 0 degrees
+  if (analogValue > 2045) {
+    Serial.println(" => Bright");
+    digitalWrite(RELAY_PIN, HIGH); // Turn relay off
   } else {
-    Serial.println(" => Very bright");
-    digitalWrite(RELAY_PIN, HIGH); // Turn relay on
+    Serial.println(" => Dark");
+    digitalWrite(RELAY_PIN, LOW); // Turn relay on
 
     if (pirValue == HIGH) {
       myServo.write(180); // Move servo to 180 degrees
