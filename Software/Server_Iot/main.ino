@@ -15,7 +15,7 @@
 
 const char* ssid = "Project";
 const char* password = "12345678";
-const char* server = "api.thingspeak.com";
+const char* thingspeakServer = "api.thingspeak.com";
 const String apiKey = "OEL5UOKAN250I5UT";
 
 const int rainSensorPin = 32; // Rain sensor pin
