@@ -67,6 +67,7 @@ void loop() {
     float temperatureDHT = dht.readTemperature();
     float humidity = dht.readHumidity();
     int rainSensorValue = analogRead(rainSensorPin);
+    int analogValue = analogRead(LIGHT_SENSOR_PIN);
 
     // Display Weather Data on Serial Monitor
     Serial.println("Weather Data:");
@@ -84,17 +85,16 @@ void loop() {
     Serial.println("%");
     Serial.print("Rain Sensor: ");
     Serial.println(rainSensorValue);
+    Serial.print("Analog Value (LDR): ");
+    Serial.println(analogValue);
     
     // Send Weather Data to ThingSpeak
-    sendDataToThingSpeak(temperatureBMP, temperatureDHT, pressure, humidity, rainSensorValue);
+    sendDataToThingSpeak(temperatureBMP, temperatureDHT, pressure, humidity, rainSensorValue, analogValue);
 
-    // Read Light and PIR Data
-    int analogValue = analogRead(LIGHT_SENSOR_PIN);
+    // Read PIR Data
     int pirValue = digitalRead(PIR_SENSOR_PIN);
 
-    Serial.print("Analog Value = ");
-    Serial.print(analogValue);
-    Serial.print(" | PIR Value = ");
+    Serial.print("PIR Value = ");
     Serial.print(pirValue);
 
     if (analogValue > 2045) {
@@ -115,7 +115,7 @@ void loop() {
   }
 }
 
-void sendDataToThingSpeak(float temperatureBMP, float temperatureDHT, float pressure, float humidity, int rainSensorValue) {
+void sendDataToThingSpeak(float temperatureBMP, float temperatureDHT, float pressure, float humidity, int rainSensorValue, int analogValue) {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
 
@@ -125,6 +125,7 @@ void sendDataToThingSpeak(float temperatureBMP, float temperatureDHT, float pres
     url += "&field3=" + String(pressure);
     url += "&field4=" + String(humidity);
     url += "&field5=" + String(rainSensorValue);
+    url += "&field6=" + String(analogValue);
 
     Serial.println("Sending data to ThingSpeak...");
     Serial.println(url);
