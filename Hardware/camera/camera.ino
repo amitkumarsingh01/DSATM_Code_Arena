@@ -9,7 +9,21 @@ const char* password = "12345678";
 WebServer server(80);
 
 void handleRoot() {
-  server.send(200, "text/html", "<img src=\"/stream\" style=\"width: 100vw; height: 100vh; object-fit: cover;\" />");
+  String html = "<!DOCTYPE html><html>";
+  html += "<head><style>body{margin:0;}</style></head>";
+  html += "<body>";
+  html += "<img id='stream' src='/stream' style='width:100vw; height:56.25vw; object-fit:cover;' />";
+  html += "<button onclick='saveImage()' style='position:absolute;top:10px;left:10px;'>Save Image</button>";
+  html += "<script>";
+  html += "function saveImage() {";
+  html += "var link = document.createElement('a');";
+  html += "link.href = document.getElementById('stream').src;";
+  html += "link.download = 'snapshot.jpg';";
+  html += "link.click();";
+  html += "}";
+  html += "</script>";
+  html += "</body></html>";
+  server.send(200, "text/html", html);
 }
 
 void handleStream() {
@@ -83,15 +97,10 @@ void setup() {
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
 
-  if (psramFound()) {
-    config.frame_size = FRAMESIZE_UXGA;
-    config.jpeg_quality = 10;
-    config.fb_count = 2;
-  } else {
-    config.frame_size = FRAMESIZE_SVGA;
-    config.jpeg_quality = 12;
-    config.fb_count = 1;
-  }
+  // Adjust the frame size and JPEG quality for better performance
+  config.frame_size = FRAMESIZE_HD; // 1280x720, which is 16:9
+  config.jpeg_quality = 10;         // Lower quality for reduced lag
+  config.fb_count = 1;
 
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
