@@ -60,19 +60,19 @@ void setup() {
 
   server.on("/toggle_automated", HTTP_GET, [](AsyncWebServerRequest *request){
     automatedMode = !automatedMode;
-    request->send(200, "text/plain", automatedMode ? "Automated mode" : "Manual mode");
+    request->send(200, "text/plain", automatedMode ? "Manual Mode" : "Automated Mode");
   });
 
   server.on("/toggle_light", HTTP_GET, [](AsyncWebServerRequest *request){
     lightStatus = !lightStatus;
     digitalWrite(RELAY_PIN, lightStatus ? HIGH : LOW);
-    request->send(200, "text/plain", lightStatus ? "Light ON" : "Light OFF");
+    request->send(200, "text/plain", lightStatus ? "Light OFF" : "Light ON");
   });
 
   server.on("/toggle_dim", HTTP_GET, [](AsyncWebServerRequest *request){
-    servoPosition = (servoPosition == 90) ? 180 : 90;
+    servoPosition = (servoPosition == 0) ? 180 : 0;
     myServo.write(servoPosition);
-    request->send(200, "text/plain", servoPosition == 90 ? "Dim" : "Bright");
+    request->send(200, "text/plain", servoPosition == 0 ? "Bright" : "Dim");
   });
 
   server.on("/get_data", HTTP_GET, [](AsyncWebServerRequest *request){

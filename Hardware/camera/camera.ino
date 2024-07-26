@@ -9,7 +9,7 @@ const char* password = "12345678";
 WebServer server(80);
 
 void handleRoot() {
-  server.send(200, "text/html", "<h1>ESP32-CAM Video Stream</h1><img src=\"/stream\" style=\"width: 100vw; height: 100vh; object-fit: cover;\" />");
+  server.send(200, "text/html", "<img src=\"/stream\" style=\"width: 100vw; height: 100vh; object-fit: cover;\" />");
 }
 
 void handleStream() {
