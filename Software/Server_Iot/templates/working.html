@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESP32 Dashboard</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .container {
+            width: 80%;
+            margin: auto;
+            text-align: center;
+        }
+        .switch {
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            position: relative;
+        }
+        .switch input {
+            display: none;
+        }
+        .slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .box {
+            display: inline-block;
+            width: 200px;
+            height: 100px;
+            border: 1px solid #ccc;
+            margin: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ESP32 Dashboard</h1>
+
+        <div>
+            <label class="switch">
+                <input type="checkbox" id="toggle_automated">
+                <span class="slider"></span>
+            </label>
+            <label for="toggle_automated">Automated Mode</label>
+        </div>
+
+        <div>
+            <label class="switch">
+                <input type="checkbox" id="toggle_light">
+                <span class="slider"></span>
+            </label>
+            <label for="toggle_light">Light</label>
+        </div>
+
+        <div>
+            <label class="switch">
+                <input type="checkbox" id="toggle_dim">
+                <span class="slider"></span>
+            </label>
+            <label for="toggle_dim">Dim/Bright</label>
+        </div>
+
+        <div id="sensor_data">
+            <div class="box" id="temperatureBMP">Temperature (BMP180): </div>
+            <div class="box" id="pressure">Pressure: </div>
+            <div class="box" id="temperatureDHT">Temperature (DHT11): </div>
+            <div class="box" id="humidity">Humidity: </div>
+            <div class="box" id="rainSensor">Rain Sensor: </div>
+            <div class="box" id="lightSensor">Analog Value (LDR): </div>
+            <div class="box" id="pirSensor">PIR Sensor: </div>
+            <div class="box" id="relayStatus">Relay Status: </div>
+            <div class="box" id="servoPosition">Servo Position: </div>
+            <div class="box" id="lightStatus">Light Status: </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            setInterval(fetchData, 5000);
+
+            $('#toggle_automated').change(function() {
+                $.get('/toggle_automated', function(data) {
+                    console.log(data);
+                });
+            });
+
+            $('#toggle_light').change(function() {
+                $.get('/toggle_light', function(data) {
+                    console.log(data);
+                });
+            });
+
+            $('#toggle_dim').change(function() {
+                $.get('/toggle_dim', function(data) {
+                    console.log(data);
+                });
+            });
+        });
+
+        function fetchData() {
+            $.get('/get_data', function(data) {
+                $('#temperatureBMP').text("Temperature (BMP180): " + data.temperatureBMP + " *C");
+                $('#pressure').text("Pressure: " + data.pressure + " Pa");
+                $('#temperatureDHT').text("Temperature (DHT11): " + data.temperatureDHT + " *C");
+                $('#humidity').text("Humidity: " + data.humidity + " %");
+                $('#rainSensor').text("Rain Sensor: " + data.rainSensor);
+                $('#lightSensor').text("Analog Value (LDR): " + data.lightSensor);
+                $('#pirSensor').text("PIR Sensor: " + data.pirSensor);
+                $('#relayStatus').text("Relay Status: " + data.relayStatus);
+                $('#servoPosition').text("Servo Position: " + data.servoPosition + " degrees");
+                $('#lightStatus').text("Light Status: " + (data.lightStatus ? "ON" : "OFF"));
+            });
+        }
+    </script>
+</body>
+</html>

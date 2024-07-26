@@ -1,19 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ESP32 Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Street Guard presented by AEMS</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        .container {
-            width: 80%;
-            margin: auto;
-            text-align: center;
-        }
-        .switch {
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-            position: relative;
+        body {
+            background-color: #2d2d2d;
+            color: #e5e7eb;
         }
         .switch input {
             display: none;
@@ -24,77 +20,100 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background-color: #6b7280;
             transition: .4s;
-            border-radius: 34px;
+            border-radius: 9999px;
         }
         .slider:before {
             position: absolute;
             content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
+            height: 39px;
+            width: 39px;
+            left: 6px;
+            bottom: 6px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
         }
         input:checked + .slider {
-            background-color: #2196F3;
+            background-color: #ef4444;
         }
         input:checked + .slider:before {
-            transform: translateX(26px);
+            transform: translateX(39px);
         }
-        .box {
-            display: inline-block;
-            width: 200px;
-            height: 100px;
-            border: 1px solid #ccc;
-            margin: 10px;
-            padding: 10px;
-            text-align: center;
+        .switch {   
+            width: 90px;
+            height: 51px;
+        }
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+        }
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 1px solid #e5e7eb;
+        }
+        @media (min-width: 1024px) {
+            .iframe-container {
+                width: 50%;
+                padding-bottom: 28.125%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>ESP32 Dashboard</h1>
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-8 text-center">Street Guard Admin Panel</h1>
+        <div class="flex flex-col lg:flex-row">
+            <div class="flex-1">
 
-        <div>
-            <label class="switch">
-                <input type="checkbox" id="toggle_automated">
-                <span class="slider"></span>
-            </label>
-            <label for="toggle_automated">Automated Mode</label>
+                <div class="mb-6">
+                    <label class="switch relative inline-block w-16 h-8 mr-2 align-middle">
+                        <input type="checkbox" id="toggle_automated">
+                        <span class="slider"></span>
+                    </label>
+                    <label for="toggle_automated" class="text-lg">Automated Mode</label>
+                </div>
+
+                <div class="mb-6">
+                    <label class="switch relative inline-block w-16 h-8 mr-2 align-middle">
+                        <input type="checkbox" id="toggle_light">
+                        <span class="slider"></span>
+                    </label>
+                    <label for="toggle_light" class="text-lg">Light</label>
+                </div>
+
+                <div class="mb-6">
+                    <label class="switch relative inline-block w-16 h-8 mr-2 align-middle">
+                        <input type="checkbox" id="toggle_dim">
+                        <span class="slider"></span>
+                    </label>
+                    <label for="toggle_dim" class="text-lg">Dim/Bright</label>
+                </div>
+                <div class="box bg-gray-700 p-10 rounded-md">Light Status: <span id="lightStatus"></span></div>
+            </div>
+
+            <div class="iframe-container lg:ml-4 mt-4 lg:mt-0">
+                <iframe src="https://iot-weather.vercel.app/"></iframe>
+            </div>
         </div>
 
-        <div>
-            <label class="switch">
-                <input type="checkbox" id="toggle_light">
-                <span class="slider"></span>
-            </label>
-            <label for="toggle_light">Light</label>
-        </div>
-
-        <div>
-            <label class="switch">
-                <input type="checkbox" id="toggle_dim">
-                <span class="slider"></span>
-            </label>
-            <label for="toggle_dim">Dim/Bright</label>
-        </div>
-
-        <div id="sensor_data">
-            <div class="box" id="temperatureBMP">Temperature (BMP180): </div>
-            <div class="box" id="pressure">Pressure: </div>
-            <div class="box" id="temperatureDHT">Temperature (DHT11): </div>
-            <div class="box" id="humidity">Humidity: </div>
-            <div class="box" id="rainSensor">Rain Sensor: </div>
-            <div class="box" id="lightSensor">Analog Value (LDR): </div>
-            <div class="box" id="pirSensor">PIR Sensor: </div>
-            <div class="box" id="relayStatus">Relay Status: </div>
-            <div class="box" id="servoPosition">Servo Position: </div>
-            <div class="box" id="lightStatus">Light Status: </div>
+        <div id="sensor_data" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+            <div class="box bg-gray-700 p-4 rounded-md">Temperature (BMP180): <span id="temperatureBMP"></span></div>
+            <div class="box bg-gray-700 p-4 rounded-md">Pressure: <span id="pressure"></span></div>
+            <div class="box bg-gray-700 p-4 rounded-md">Temperature (DHT11): <span id="temperatureDHT"></span></div>
+            <div class="box bg-gray-700 p-4 rounded-md">Humidity: <span id="humidity"></span></div>
+            <div class="box bg-gray-700 p-4 rounded-md">Rain Sensor: <span id="rainSensor"></span></div>
+            <div class="box bg-gray-700 p-4 rounded-md">Analog Value (LDR): <span id="lightSensor"></span></div>
+            <div class="box bg-gray-700 p-4 rounded-md">PIR Sensor: <span id="pirSensor"></span></div>
+            <div class="box bg-gray-700 p-4 rounded-md">Relay Status: <span id="relayStatus"></span></div>
+            <div class="box bg-gray-700 p-4 rounded-md">Servo Position: <span id="servoPosition"></span></div>
         </div>
     </div>
 
@@ -123,16 +142,16 @@
 
         function fetchData() {
             $.get('/get_data', function(data) {
-                $('#temperatureBMP').text("Temperature (BMP180): " + data.temperatureBMP + " *C");
-                $('#pressure').text("Pressure: " + data.pressure + " Pa");
-                $('#temperatureDHT').text("Temperature (DHT11): " + data.temperatureDHT + " *C");
-                $('#humidity').text("Humidity: " + data.humidity + " %");
-                $('#rainSensor').text("Rain Sensor: " + data.rainSensor);
-                $('#lightSensor').text("Analog Value (LDR): " + data.lightSensor);
-                $('#pirSensor').text("PIR Sensor: " + data.pirSensor);
-                $('#relayStatus').text("Relay Status: " + data.relayStatus);
-                $('#servoPosition').text("Servo Position: " + data.servoPosition + " degrees");
-                $('#lightStatus').text("Light Status: " + (data.lightStatus ? "ON" : "OFF"));
+                $('#temperatureBMP').text(data.temperatureBMP + " *C");
+                $('#pressure').text(data.pressure + " Pa");
+                $('#temperatureDHT').text(data.temperatureDHT + " *C");
+                $('#humidity').text(data.humidity + " %");
+                $('#rainSensor').text(data.rainSensor);
+                $('#lightSensor').text(data.lightSensor);
+                $('#pirSensor').text(data.pirSensor);
+                $('#relayStatus').text(data.relayStatus);
+                $('#servoPosition').text(data.servoPosition + " degrees");
+                $('#lightStatus').text(data.lightStatus ? "ON" : "OFF");
             });
         }
     </script>
