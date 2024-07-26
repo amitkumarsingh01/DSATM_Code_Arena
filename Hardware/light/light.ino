@@ -1,3 +1,6 @@
+//ESP32 code for light
+// created by Amit Kumar Singh
+
 #include <ESP32Servo.h>
 
 #define LIGHT_SENSOR_PIN 33
