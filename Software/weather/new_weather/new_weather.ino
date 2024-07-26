@@ -1,3 +1,6 @@
+//ESP32 weather code
+// created by Amit Kumar Singh
+
 #include <Wire.h>
 #include <Adafruit_BMP085.h>
 #include "DHT.h"
